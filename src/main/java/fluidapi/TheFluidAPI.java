@@ -3,10 +3,15 @@ package fluidapi;
 import stolenfromfablabs.Fraction;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CauldronBlock;
+import net.minecraft.block.FluidDrainable;
+import net.minecraft.block.FluidFillable;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.WaterFluid;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class TheFluidAPI {
@@ -43,13 +48,16 @@ public class TheFluidAPI {
             }
             if (returnamount != null)
                 return new VirtualFluid(new Identifier("minecraft:water"), returnamount);
-        } else if (world.getBlockState(blockToRequestFrom).getBlock() instanceof Waterloggable) {
+        } else if (world.getBlockState(blockToRequestFrom).getBlock() instanceof FluidDrainable) {
             if (amount.isGreaterThanOrEqualTo(Fraction.ONE)) {
-                if (Fluids.WATER.equals(((Waterloggable) world.getBlockState(blockToRequestFrom).getBlock()).tryDrainFluid(world, blockToRequestFrom, world.getBlockState(blockToRequestFrom)))) {
-                    return new VirtualFluid(new Identifier("minecraft:water"), Fraction.ONE);
+                Fluid fluid = ((FluidDrainable) world.getBlockState(blockToRequestFrom).getBlock()).tryDrainFluid(world, blockToRequestFrom, world.getBlockState(blockToRequestFrom)));
+                if (fluid != Fluids.EMPTY) {
+                    return new VirtualFluid(Registry.FLUID.getId(fluid), Fraction.ONE);
                 } else {
                     return null;
                 }
+            } else {
+                return null;
             }
         }
         return null;
@@ -84,8 +92,16 @@ public class TheFluidAPI {
                 }
                 return new VirtualFluid(fluid.type, i);
             }
-        } else {
-            //
+        } else if (world.getBlockState(blockToPushTo).getBlock() instanceof FluidFillable) {
+            if (fluid.type.toString().equals("minecraft:water") && fluid.amount.isGreaterThanOrEqualTo(Fraction.ONE)) {
+                if (((Waterloggable) world.getBlockState(blockToPushTo).getBlock()).tryFillWithFluid(world, blockToPushTo, world.getBlockState(blockToPushTo), Fluids.WATER.getDefaultState())) {
+                    return new VirtualFluid(fluid.type, fluid.amount.subtract(Fraction.ONE));
+                } else {
+                    return fluid;
+                }
+            } else {
+                return fluid;
+            }
         }
         return fluid;
     }

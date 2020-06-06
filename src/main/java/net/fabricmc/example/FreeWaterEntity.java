@@ -17,7 +17,7 @@ public class FreeWaterEntity extends BlockEntity implements Tickable {
     @Override
     public void tick() {
         if (tickCount == 100) {
-            VirtualFluid epic = TheFluidAPI.pushFluid(new VirtualFluid(new Identifier("minecraft:water"), Fraction.of(2, 3)), world, pos.up(), pos);
+            VirtualFluid epic = TheFluidAPI.pushFluid(new VirtualFluid(new Identifier("minecraft:water"), Fraction.ONE), world, pos.up(), pos);
             if (epic != null)
                 System.out.println("Couldn't Push Flud: " + epic.type.toString() + " " + epic.amount.toString());
             tickCount = 0;
