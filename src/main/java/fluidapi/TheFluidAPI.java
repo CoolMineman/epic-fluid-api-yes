@@ -50,7 +50,7 @@ public class TheFluidAPI {
                 return new VirtualFluid(new Identifier("minecraft:water"), returnamount);
         } else if (world.getBlockState(blockToRequestFrom).getBlock() instanceof FluidDrainable) {
             if (amount.isGreaterThanOrEqualTo(Fraction.ONE)) {
-                Fluid fluid = ((FluidDrainable) world.getBlockState(blockToRequestFrom).getBlock()).tryDrainFluid(world, blockToRequestFrom, world.getBlockState(blockToRequestFrom)));
+                Fluid fluid = ((FluidDrainable) world.getBlockState(blockToRequestFrom).getBlock()).tryDrainFluid(world, blockToRequestFrom, world.getBlockState(blockToRequestFrom));
                 if (fluid != Fluids.EMPTY) {
                     return new VirtualFluid(Registry.FLUID.getId(fluid), Fraction.ONE);
                 } else {
