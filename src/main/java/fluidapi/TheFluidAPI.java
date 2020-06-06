@@ -3,6 +3,8 @@ package fluidapi;
 import stolenfromfablabs.Fraction;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CauldronBlock;
+import net.minecraft.block.Waterloggable;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -41,6 +43,14 @@ public class TheFluidAPI {
             }
             if (returnamount != null)
                 return new VirtualFluid(new Identifier("minecraft:water"), returnamount);
+        } else if (world.getBlockState(blockToRequestFrom).getBlock() instanceof Waterloggable) {
+            if (amount.isGreaterThanOrEqualTo(Fraction.ONE)) {
+                if (Fluids.WATER.equals(((Waterloggable) world.getBlockState(blockToRequestFrom).getBlock()).tryDrainFluid(world, blockToRequestFrom, world.getBlockState(blockToRequestFrom)))) {
+                    return new VirtualFluid(new Identifier("minecraft:water"), Fraction.ONE);
+                } else {
+                    return null;
+                }
+            }
         }
         return null;
     }
